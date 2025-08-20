@@ -3,46 +3,35 @@ title: Terraform v5.7.0 now available
 description: Terraform v5.7.0 fixes a number of known bugs in the v5 Provider
 products:
   - fundamentals
-date: 2025-07-11
+date: 2025-07-14
 ---
 
-Earlier this year, we announced the launch of the new [Terraform v5 Provider](/changelog/2025-02-03-terraform-v5-provider/). We are aware of the high mumber of [issues](https://github.com/cloudflare/terraform-provider-cloudflare) reported by the Cloudflare community related to the v5 release, with 13.5% of resources impacted. We have committed to releasing improvements on a 2-3 week cadeance to ensure it's stability and relability, including the v5.7 release.
+Earlier this year, we announced the launch of the new [Terraform v5 Provider](/changelog/2025-02-03-terraform-v5-provider/). We are aware of the high mumber of [issues](https://github.com/cloudflare/terraform-provider-cloudflare) reported by the Cloudflare community related to the v5 release, with 13.5% of resources impacted. We have committed to releasing improvements on a 2 week cadeance to ensure it's stability and relability, including the v5.7 release.
 
 Thank you for continuing to raise issues and please keep an eye on this changelog for more information about upcoming releases.
 
 ### Changes
-
-- Broad fixes across resources with recurring diffs, including, but not limited to:
-  - `cloudflare_zero_trust_access_identity_provider`
-	- `cloudflare_zone`
-- `cloudflare_page_rules` runtime panic when setting `cache_level` to `cache_ttl_by_status`
-- Failure to serialize requests in `cloudflare_zero_trust_tunnel_cloudflared_config`
-- Undocumented field 'priority' on `zone_lockdown` resource
-- Missing importability for `cloudflare_zero_trust_device_default_profile_local_domain_fallback` and `cloudflare_account_subscription`
-- New resources:
-  - `cloudflare_schema_validation_operation_settings`
-  - `cloudflare_schema_validation_schemas`
-  - `cloudflare_schema_validation_settings`
-  - `cloudflare_zero_trust_device_settings`
+- Addressed permanent diff bug on Cloudflare Tunnel config
+- State is now saved correctly for Zero Trust Access applications
+- Exact match is now working as expected within `data.cloudflare_zero_trust_access_applications`
+- `cloudflare_zero_trust_access_policy` now supports OIDC claims & diff issues resolved
+- Self hosted applications with private IPs no longer require a public domain for `cloudflare_zero_trust_access_application`.
+- New resource:
+  - `cloudflare_zero_trust_tunnel_warp_connector`
 - Other bug fixes
 
 For a more detailed look at all of the changes, see the
 [changelog](https://github.com/cloudflare/terraform-provider-cloudflare/releases/tag/v5.7.0) in GitHub.
 
 ### Issues Closed
-- [#5098: 500 Server Error on updating 'zero_trust_tunnel_cloudflared_virtual_network' Terraform resource](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5098)
-- [#5148: cloudflare_user_agent_blocking_rule doesn’t actually support user agents](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5148)
-- [#5472: cloudflare_zone showing changes in plan after following upgrade steps](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5472)
-- [#5508: cloudflare_zero_trust_tunnel_cloudflared_config failed to serialize http request](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5508)
-- [#5509: cloudflare_zone: Problematic Terraform behaviour with paused zones](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5509)
-- [#5520: Resource 'cloudflare_magic_wan_static_route' is not working](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5520)
-- [#5524: Optional fields cause crash in cloudflare_zero_trust_tunnel_cloudflared(s) when left null](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5524)
-- [#5526: Provider v5 migration issue: no import method for cloudflare_zero_trust_device_default_profile_local_domain_fallback](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5526)
+- [#5563: cloudflare_logpull_retention is missing import](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5563)
+- [#5608: cloudflare_zero_trust_access_policy in 5.5.0 provider gives error upon apply unexpected new value: .app_count: was cty.NumberIntVal(0), but now cty.NumberIntVal(1)](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5608)
+- [#5612: data.cloudflare_zero_trust_access_applications does not exact match](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5612)
 - [#5532: cloudflare_zero_trust_access_identity_provider detects changes on every plan](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5532)
-- [#5561: cloudflare_zero_trust_tunnel_cloudflared: cannot rotate tunnel secret](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5561)
-- [#5569: cloudflare_zero_trust_device_custom_profile_local_domain_fallback not allowing multiple DNS Server entries](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5569)
-- [#5577: Panic modifying page_rule resource](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5577)
-- [#5653: cloudflare_zone_setting resource schema confusion in 5.5.0: value vs enabled](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5653)
+- [#5662: cloudflare_zero_trust_access_policy does not support OIDC claims](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5662)
+- [#5565: Running Terraform with the cloudflare_zero_trust_access_policy resource results in updates on every apply, even when no changes are made - breaks idempotency](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5565)
+- [#5529: cloudflare_zero_trust_access_application: self hosted applications with private ips require public domain ](https://github.com/cloudflare/terraform-provider-cloudflare/issues/5529)
+
 
 If you have an unaddressed issue with the provider, we encourage you to check the
 [open issues](https://github.com/cloudflare/terraform-provider-cloudflare/issues) and open a new one if one does not already
@@ -50,7 +39,9 @@ exist for what you are experiencing.
 
 ### Upgrading
 
-If you are evaluating a move from v4 to v5, please make use of the
+We suggest holding on migration to v5 while we work on stablization of the v5 provider. This will ensure Cloudflare can work ahead and avoid any blocking issues.
+
+If you'd like more information on migrating from v5 to v5, please make use of the
 [migration guide](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/guides/version-5-upgrade). We have
 provided automated migration scripts using Grit which simplify the transition, although these do not support implementations which
 use Terraform modules, so customers making use of modules need to migrate manually. Please make use of `terraform plan` to test
