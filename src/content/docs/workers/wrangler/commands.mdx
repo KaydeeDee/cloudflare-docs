@@ -27,7 +27,7 @@ Wrangler offers a number of commands to manage your Cloudflare Workers.
 - [`hyperdrive`](#hyperdrive) - Manage your Hyperdrives.
 - [`deploy`](#deploy) - Deploy your Worker to Cloudflare.
 - [`dev`](#dev) - Start a local server for developing your Worker.
-- [`delete`](#delete-1) - Delete your Worker from Cloudflare.
+- [`delete`](#delete) - Delete your Worker from Cloudflare.
 - [`kv namespace`](#kv-namespace) - Manage Workers KV namespaces.
 - [`kv key`](#kv-key) - Manage key-value pairs within a Workers KV namespace.
 - [`kv bulk`](#kv-bulk) - Manage multiple key-value pairs within a Workers KV namespace in batches.
@@ -772,13 +772,13 @@ wrangler workflows instances list <WORKFLOW_NAME> [OPTIONS]
 Describe a specific instance of a Workflow, including its current status, any persisted state, and per-step outputs.
 
 ```sh
-wrangler workflows instances describe <WORKFLOW_NAME> <ID> [OPTIONS]
+wrangler workflows instances describe <WORKFLOW_NAME> [ID] [OPTIONS]
 ```
 
 - `WORKFLOW_NAME` <Type text="string" /> <MetaInfo text="required" />
   - The name of a registered Workflow.
-- `ID` <Type text="string" /> <MetaInfo text="required" />
-  - The ID of a Workflow instance. You can optionally provide `latest` to refer to the most recently created instance of a Workflow.
+- `ID` <Type text="string" /> <MetaInfo text="(default: latest) optional" />
+  - The ID of a Workflow instance. You can optionally provide `latest` to refer to the most recently created instance of a Workflow. Defaults to `latest` if no ID is provided.
 
 <Render file="wrangler-commands/global-flags" product="workers" />
 
@@ -1046,6 +1046,8 @@ wrangler pages deployment list [--project-name <PROJECT_NAME>]
   - The name of the project you would like to list deployments for.
 - `--environment` <Type text="'production'|'preview'" /> <MetaInfo text="optional" />
   - Environment type to list deployments for.
+- `--json` <Type text="boolean" /> <MetaInfo text="optional" />
+  - Whether to output the list in JSON format.
 
 <Render file="wrangler-commands/global-flags" product="workers" />
 
@@ -1208,154 +1210,13 @@ Manage your [Pipelines](/pipelines/).
 
 <Render file="wrangler-commands/pipelines" product="workers" />
 
+---
+
 ## `queues`
 
 Manage your Workers [Queues](/queues/) configurations.
 
-### `create`
-
-Create a new queue.
-
-```txt
-wrangler queues create <name> [OPTIONS]
-```
-
-- `name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue to create.
-- `--delivery-delay-secs` <Type text="number" /> <MetaInfo text="optional" />
-  - How long a published message should be delayed for, in seconds. Must be a positive integer.
-- `--message-retention-period-secs` <Type text="number" /> <MetaInfo text="optional" />
-  - How long a published message is retained in the Queue. Must be a positive integer between 60 and 1209600 (14 days). Defaults to 345600 (4 days).
-
-<Render file="wrangler-commands/global-flags" product="workers" />
-
-### `update`
-
-Update an existing queue.
-
-```txt
-wrangler queues update <name> [OPTIONS]
-```
-
-- `name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue to update.
-- `--delivery-delay-secs` <Type text="number" /> <MetaInfo text="optional" />
-  - How long a published message should be delayed for, in seconds. Must be a positive integer.
-- `--message-retention-period-secs` <Type text="number" /> <MetaInfo text="optional" />
-  - How long a published message is retained on the Queue. Must be a positive integer between 60 and 1209600 (14 days). Defaults to 345600 (4 days).
-
-<Render file="wrangler-commands/global-flags" product="workers" />
-
-### `delete`
-
-Delete an existing queue.
-
-```txt
-wrangler queues delete <name> [OPTIONS]
-```
-
-- `name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue to delete.
-
-<Render file="wrangler-commands/global-flags" product="workers" />
-
-### `list`
-
-List all queues in the current account.
-
-```txt
-wrangler queues list [OPTIONS]
-```
-
-<Render file="wrangler-commands/global-flags" product="workers" />
-
-### `info`
-
-Get information on individual queues.
-
-```txt
-wrangler queues info <name>
-```
-
-- `name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue to inspect.
-
-### `consumer`
-
-Manage queue consumer configurations.
-
-### `consumer add <script-name>`
-
-Add a Worker script as a [queue consumer](/queues/reference/how-queues-works/#consumers).
-
-```txt
-wrangler queues consumer add <queue-name> <script-name> [OPTIONS]
-```
-
-- `queue-name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue to add the consumer to.
-- `script-name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the Workers script to add as a consumer of the named queue.
-- `--batch-size` <Type text="number" /> <MetaInfo text="optional" />
-  - Maximum number of messages per batch. Must be a positive integer.
-- `--batch-timeout` <Type text="number" /> <MetaInfo text="optional" />
-  - Maximum number of seconds to wait to fill a batch with messages. Must be a positive integer.
-- `--message-retries` <Type text="number" /> <MetaInfo text="optional" />
-  - Maximum number of retries for each message. Must be a positive integer.
-- `--max-concurrency` <Type text="number" /> <MetaInfo text="optional" />
-  - The maximum number of concurrent consumer invocations that will be scaled up to handle incoming message volume. Must be a positive integer.
-- `--retry-delay-secs` <Type text="number" /> <MetaInfo text="optional" />
-  - How long a retried message should be delayed for, in seconds. Must be a positive integer.
-
-<Render file="wrangler-commands/global-flags" product="workers" />
-
-### `consumer remove`
-
-Remove a consumer from a queue.
-
-```txt
-wrangler queues consumer remove <queue-name> <script-name>
-```
-
-- `queue-name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue to remove the consumer from.
-- `script-name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the Workers script to remove as the consumer.
-
-<Render file="wrangler-commands/global-flags" product="workers" />
-
-### `purge`
-
-Permanently delete all messages in a queue.
-
-```txt
-wrangler queues purge <queue-name>
-```
-
-- `queue-name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue from which messages should be deleted.
-
-### `pause-delivery`
-
-Pause message delivery from a Queue to consumers (including push consumers, and HTTP pull consumers)
-
-```txt
-wrangler queues pause-delivery <queue-name>
-```
-
-- `queue-name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue which delivery should be paused.
-
-### `resume-delivery`
-
-Resume delivery from a Queue to consumers (including push consumers, and HTTP pull consumers)
-
-```txt
-wrangler queues resume-delivery <queue-name>
-```
-
-- `queue-name` <Type text="string" /> <MetaInfo text="required" />
-  - The name of the queue from which delivery should be resumed.
+<Render file="wrangler-commands/queues" product="workers" />
 
 ---
 
@@ -1989,9 +1850,6 @@ wrangler types [<PATH>] [OPTIONS]
   	SERVICE_BINDING: Service<import("../bound-worker/src/index").Entrypoint>;
   }
   ```
-  :::note
-  Currently, this only works if your service binding targets a [named entrypoint](/workers/runtime-apis/bindings/service-bindings/rpc/#named-entrypoints), rather than the default export. If you are unable to use named entrypoints, we recommend you extend your `Env` type in a separate file in order to manually provide those types without risk of being overwritten by subsequent runs of `wrangler types`. This is a temporary limitation we are working to fix.
-  :::
 
 ---
 
